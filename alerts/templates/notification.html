@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Notifications</title>
+</head>
+<body>
+
+<div id="notification-container"></div>
+
+<script>
+
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/alert_update_group/');
+    const notificationContainer = document.getElementById('notification-container');
+
+    // Log when the WebSocket connection is opened
+    socket.onopen = function (event) {
+        console.log('WebSocket connection opened:', event);
+        // Request permission to show notifications
+        if ('Notification' in window) {
+            Notification.requestPermission().then(function (permission) {
+                if (permission === 'granted') {
+                    console.log('Notification permission granted');
+                } else {
+                    console.warn('Notification permission denied');
+                }
+            });
+        }
+    };
+
+    // Log when the WebSocket connection is closed
+    socket.onclose = function (event) {
+        console.log('WebSocket connection closed:', event);
+    };
+
+    socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        const message = data.message;
+        console.log('Received message:', message);
+    
+        if (Notification.permission === 'granted') {
+            // Handle push notification
+            console.log('workks')
+            new Notification('Realtime Notifications', {
+                body: 'Notification',
+            });
+        } else {
+            // Handle regular notification or other logic
+        }
+    };
+</script>
+
+</body>
+</html>
